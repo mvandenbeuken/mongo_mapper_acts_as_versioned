@@ -53,10 +53,10 @@ module MongoMapper
 
         def clear_old_versions
           return if self.class.max_version_limit == 0
-          excess_bagage = version.to_i - self.class.max_version_limit
+          excess_baggage = version.to_i - self.class.max_version_limit
 
-          if excess_bagage > 0
-            versions.reject! { |v| v.version.to_i <= excess_bagage }
+          if excess_baggage > 0
+            versions.reject! { |v| v.version.to_i <= excess_baggage }
           end
         end
 
@@ -104,13 +104,21 @@ module MongoMapper
           (self.class.versioned_keys & changed).any?
         end
 
+        def save_version?
+          save_version = (self.class.versioned_keys & changed).any?
+          if self.respond_to? :approved_revision?
+            save_version = save_version && approved_revision?
+          end
+          save_version
+        end
+
         def without_revision(&block)
           self.class.without_revision(&block)
         end
 
         def empty_callback
         end
-        
+
         def escape_mongo(obj)
           obj.is_a?(Date) || obj.is_a?(Time) ? Date.to_mongo(obj) : obj
         end

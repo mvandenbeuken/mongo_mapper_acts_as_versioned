@@ -51,6 +51,27 @@ Default ignored keys are:
 
 Simply add `self.non_versioned_keys << 'new_skipped_key'` somewhere in your model.
 
+### Trigger versioning based on a custom ruleset
+
+Add a method called approved_revision? to your model and you can control whether an update triggers a new version or not.
+
+This is useful for document management, where a new version should not be created until a document has been "approved".
+
+#### Example
+
+	class Page
+	  include MongoMapper::Document
+
+	  plugin MongoMapper::Acts::Versioned
+
+	  key :title, String
+		key :approved, Boolean
+
+		def approved_revision?
+			self.approved
+		end
+	end
+	
 ## Tested with
 
 * MongoMapper 0.11.1
